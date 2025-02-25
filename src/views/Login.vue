@@ -1,31 +1,42 @@
 <template>
-  <div>
-    <input v-model="email" placeholder="Email">
-    <input v-model="password" type="password" placeholder="Mot de passe">
-    <button @click="login">Se connecter</button>
+  <div class="login-container">
+    <h2>Connexion</h2>
+    <form @submit.prevent="login">
+      <input v-model="email" type="email" placeholder="Email" required />
+      <input v-model="motDePasse" type="password" placeholder="Mot de passe" required />
+      <button type="submit">Se connecter</button>
+      <p class="register-link">
+        Pas encore inscrit ? <router-link to="/register">Créer un compte</router-link>
+      </p>
+      <p class="forgot-password">
+        <router-link to="/reset-password">Mot de passe oublié ?</router-link>
+      </p>
+    </form>
+    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
   </div>
 </template>
 
 <script>
-import authService from '../services/authService';
+import { mapActions } from "vuex"; // Import Vuex pour appeler l'action
 
 export default {
   data() {
     return {
-      email: '',
-      password: ''
+      email: "",
+      motDePasse: "",
+      errorMessage: null,
     };
   },
   methods: {
+    ...mapActions("auth", ["login"]), // Connecte la méthode login() à l'action Vuex
     async login() {
       try {
-        const response = await authService.login(this.email, this.password);
-        localStorage.setItem('token', response.data.token); // Sauvegarde le token
-        console.log('Connexion réussie:', response.data);
+        await this.login({ email: this.email, motDePasse: this.motDePasse });
+        this.$router.push("/"); // Redirection après connexion
       } catch (error) {
-        console.error('Erreur de connexion:', error);
+        this.errorMessage = error?.message || "Erreur de connexion ❌";
       }
-    }
-  }
+    },
+  },
 };
 </script>
