@@ -9,7 +9,9 @@ const authService = {
       const response = await axios.post(`${API_URL}/inscription`, {
         nom,
         email,
-        motDePasse
+        motDePasse,
+        dateNaissance,
+        lieuNaissance
       });
       return response.data;
     } catch (error) {
